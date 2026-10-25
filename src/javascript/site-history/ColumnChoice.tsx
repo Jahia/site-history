@@ -66,7 +66,7 @@ export const ColumnChoice = ({ columns, visibility, onChange }: ColumnChoiceProp
       columns.filter(column => !isColumnVisible(visibility, column.key)),
       false,
     ),
-      <div key="footer" className={styles.columnChoiceFooter}>
+      <div key="footer" className={styles.menuFooter}>
           <Button
         variant="ghost"
         label={t("siteHistory.columnChoice.close")}

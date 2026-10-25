@@ -38,7 +38,6 @@
     "error": "Fehler beim Laden des Verlaufs",
     "accessDenied": "Sie haben keine Berechtigung, den Verlauf dieser Website anzuzeigen.",
     "filters": {
-      "action": "Aktion",
       "user": "Benutzer, zum Beispiel root, jsmith",
       "dateFrom": "Von",
       "dateTo": "Bis",
@@ -51,7 +50,17 @@
       "tooManyUsers": "Wählen Sie höchstens {{max}} Benutzer aus",
       "today": "Heute",
       "nextMonth": "Zum nächsten Monat",
-      "previousMonth": "Zum vorherigen Monat"
+      "previousMonth": "Zum vorherigen Monat",
+      "add": "Filter hinzufügen",
+      "chip": "{{name}}: {{value}}",
+      "chipName": "{{name}}:",
+      "clearOne": "Filter {{name}} zurücksetzen",
+      "close": "Schließen",
+      "pathHint": "Geben Sie einen Pfad ein und drücken Sie die Eingabetaste, oder wählen Sie einen aus.",
+      "userHint": "Geben Sie durch Kommas getrennte Benutzerschlüssel ein und drücken Sie die Eingabetaste, oder wählen Sie Benutzer aus.",
+      "dateSince": "ab {{from}}",
+      "dateUntil": "bis {{to}}",
+      "dateBetween": "{{from}} bis {{to}}"
     },
     "pagination": {
       "itemsPerPage": "Zeilen pro Seite",
