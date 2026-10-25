@@ -15,8 +15,8 @@ type FilterChipProps = ChipState & Readonly<{
   /** The value as text. An empty text gives a dashed chip with no close button. */
   value: string;
   onClear: () => void;
-  /** The editor. A function gets the close of the editor, for a button that leaves the editor. */
-  children: ReactNode | ((close: () => void) => ReactNode);
+  /** The editor. A function gets a close of the editor that leaves the focus to a dialog, for a button that opens a picker. */
+  children: ReactNode | ((closeForDialog: () => void) => ReactNode);
 }>;
 
 export const FilterChip = ({ id, name, value, isOpen, onOpen, onClose, onClear, children }: FilterChipProps) => {
@@ -35,15 +35,22 @@ export const FilterChip = ({ id, name, value, isOpen, onOpen, onClose, onClear, 
   // Moonstone Button takes no ref, so the chip finds its first button.
   const focusChip = () => anchorRef.current?.querySelector("button")?.focus();
 
+  // A new value changes a chip from one Button to a ButtonGroup, or back, so its button exists after the render only.
+  const focusChipAfterRender = () => setTimeout(focusChip);
+
   const close = () => {
+    onClose();
+    focusChipAfterRender();
+  };
+
+  const closeForDialog = () => {
     onClose();
     focusChip();
   };
 
   const clear = () => {
     onClear();
-    // A pinned chip changes from a ButtonGroup to one Button, so its button exists after the render only.
-    setTimeout(focusChip);
+    focusChipAfterRender();
   };
 
   const editButton = (
@@ -107,7 +114,7 @@ export const FilterChip = ({ id, name, value, isOpen, onOpen, onClose, onClear, 
             }}
               >
                   <MenuItem variant="title" label={name}/>
-                  {typeof children === "function" ? children(close) : children}
+                  {typeof children === "function" ? children(closeForDialog) : children}
                   <div className={styles.menuFooter}>
                       <Button
                 variant="ghost"

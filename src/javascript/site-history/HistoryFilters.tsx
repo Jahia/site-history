@@ -71,13 +71,15 @@ const PathFilter = ({ filters, siteKey, sitePath, language, onChange, onClose, .
   };
 
   // The picker dialog opens below the editor Menu, so the editor closes first.
+  // A filter change returns the table to page 1, so the picked path that is already the filter changes nothing.
   const pick = (closeEditor: () => void) => {
+    const current = draft.trim();
     closeEditor();
     openPicker?.({
       type: "editorial",
       site: siteKey,
       lang: language,
-      setValue: ([node]) => node && onChange("path", node.path),
+      setValue: ([node]) => node && node.path !== current && onChange("path", node.path),
     });
   };
 
@@ -173,7 +175,11 @@ const UserFilter = ({ filters, pickedUsers, siteKey, language, onChange, onPick,
         onPick(nodes.map(({ name, uuid, path }) => ({ name, uuid, path })));
         // The picked users replace the preselected users, so a user unselected in the picker leaves the list.
         const typed = keys.filter(key => !preselected.some(user => user.name === key));
-        onChange("user", [...new Set([...typed, ...nodes.map(node => node.name)])]);
+        const picked = [...new Set([...typed, ...nodes.map(node => node.name)])];
+        // A filter change returns the table to page 1, so the same users change nothing.
+        if (picked.join(", ") !== keys.join(", ")) {
+          onChange("user", picked);
+        }
       },
     });
   };
