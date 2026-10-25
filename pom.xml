@@ -8,7 +8,7 @@
     </parent>
     <groupId>org.jahia.pm.modules</groupId>
     <artifactId>site-history</artifactId>
-    <version>0.3.0</version>
+    <version>0.4.0-SNAPSHOT</version>
     <name>Site History</name>
     <description>Lists the content history of a whole site in jContent.</description>
     <packaging>bundle</packaging>
@@ -25,7 +25,7 @@
         <connection>scm:git:git@github.com:Jahia/site-history.git</connection>
         <developerConnection>scm:git:git@github.com:Jahia/site-history.git</developerConnection>
         <url>https://github.com/Jahia/site-history</url>
-        <tag>0_3_0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <properties>
