@@ -38,7 +38,6 @@
     "error": "Erreur lors du chargement de l'historique",
     "accessDenied": "Vous n'avez pas la permission de consulter l'historique de ce site.",
     "filters": {
-      "action": "Action",
       "user": "Utilisateurs, par exemple root, jsmith",
       "dateFrom": "Du",
       "dateTo": "Au",
@@ -51,7 +50,16 @@
       "tooManyUsers": "Sélectionnez au plus {{max}} utilisateurs",
       "today": "Aujourd'hui",
       "nextMonth": "Aller au mois suivant",
-      "previousMonth": "Aller au mois précédent"
+      "previousMonth": "Aller au mois précédent",
+      "add": "Ajouter un filtre",
+      "chip": "{{name}} : {{value}}",
+      "clearOne": "Effacer le filtre {{name}}",
+      "close": "Fermer",
+      "pathHint": "Saisissez un chemin et appuyez sur Entrée, ou choisissez-en un.",
+      "userHint": "Saisissez des identifiants séparés par des virgules et appuyez sur Entrée, ou choisissez des utilisateurs.",
+      "dateSince": "à partir du {{from}}",
+      "dateUntil": "jusqu'au {{to}}",
+      "dateBetween": "du {{from}} au {{to}}"
     },
     "pagination": {
       "itemsPerPage": "Lignes par page",

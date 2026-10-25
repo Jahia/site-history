@@ -103,44 +103,55 @@
   margin-bottom: var(--moon-spacing-medium);
 }
 
-/* The two dates of the range wrap to the next row together. */
-.dateRange {
-  display: flex;
-  gap: var(--moon-spacing-small);
-}
-
 /* A flex box drops the line box of an inline span, so the button sits in the middle of the filter row. */
+.chip,
 .columnChoice {
   display: flex;
+}
+
+.columnChoice {
   margin-left: auto;
 }
 
-.columnChoiceFooter {
+/* moonstone has no dashed Button. The doubled class and the attribute outrank the solid border of the outlined Button. */
+.chipEmpty.chipEmpty[data-variant] {
+  border-style: dashed;
+}
+
+/* A long value ends with an ellipsis, and the title of the button holds the full label. */
+.chipValue {
+  max-width: 400px;
+}
+
+.chipValue > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chipValue > svg {
+  flex: none;
+}
+
+.editorBody {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--moon-spacing-small);
+  padding: var(--moon-spacing-small) var(--moon-spacing-medium);
+}
+
+.typedEditor {
+  width: 336px;
+}
+
+.dateRange {
+  flex-direction: row;
+}
+
+.menuFooter {
   display: flex;
   justify-content: flex-end;
   padding: var(--moon-spacing-small);
   border-top: 1px solid var(--moon-color-gray_light);
-}
-
-/* The doubled class outranks the width: 100% that moonstone gives every Input. */
-.pathFilter.pathFilter,
-.userFilter.userFilter {
-  flex: none;
-  width: 240px;
-}
-
-.actionFilter {
-  flex: none;
-  width: 160px;
-}
-
-/* The clear button and the tags are taller than the label, so one centered line of fixed height keeps the box of the empty Dropdown. */
-.actionFilter :global(.moonstone-dropdown) {
-  flex-wrap: nowrap;
-  height: 26px;
-}
-
-.actionFilter :global(.moonstone-dropdown_tags) {
-  flex-wrap: nowrap;
-  overflow: hidden;
 }

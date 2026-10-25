@@ -38,7 +38,6 @@
     "error": "Error loading history",
     "accessDenied": "You do not have the permission to view the history of this site.",
     "filters": {
-      "action": "Action",
       "user": "Users, for example root, jsmith",
       "dateFrom": "From",
       "dateTo": "To",
@@ -51,7 +50,16 @@
       "tooManyUsers": "Select at most {{max}} users",
       "today": "Today",
       "nextMonth": "Go to the next month",
-      "previousMonth": "Go to the previous month"
+      "previousMonth": "Go to the previous month",
+      "add": "Add filter",
+      "chip": "{{name}}: {{value}}",
+      "clearOne": "Clear the {{name}} filter",
+      "close": "Close",
+      "pathHint": "Type a path and press Enter, or pick one.",
+      "userHint": "Type user keys separated by commas and press Enter, or pick users.",
+      "dateSince": "from {{from}}",
+      "dateUntil": "until {{to}}",
+      "dateBetween": "{{from}} to {{to}}"
     },
     "pagination": {
       "itemsPerPage": "Rows per page",
