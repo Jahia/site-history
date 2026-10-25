@@ -1,4 +1,5 @@
 import {addNode} from '@jahia/cypress';
+import {expectChip, FILTERS, selectActions, typePath} from '../support/filterChips';
 import {
     DEFAULT_COLUMN_LABELS,
     HistoryFilter,
@@ -16,9 +17,6 @@ const PAGE = '[data-sel-role="site-history"]';
 const ACTION_BAR = `${PAGE} header`;
 const REFRESH = `${ACTION_BAR} [data-sel-role="site-history-refresh"]`;
 const CLEAR_FILTERS = `${ACTION_BAR} [data-sel-role="filter-clear"]`;
-const FILTERS = '[data-sel-role="site-history-filters"]';
-const PATH_FILTER = '[data-sel-role="filter-path"]';
-const ACTION_FILTER = '[data-sel-role="filter-action"]';
 const TABLE = '[data-sel-role="site-history-table"]';
 const HEADERS = `${TABLE} thead th`;
 const ROWS = `${TABLE} tbody tr`;
@@ -50,13 +48,6 @@ const expectTotalItems = (text: string) =>
 
 // The table keeps the previous rows while a query runs, and aria-busy marks that state.
 const waitForRows = () => cy.get(TABLE, {timeout: LOAD_TIMEOUT}).should('have.attr', 'aria-busy', 'false');
-
-const selectCreatedAction = () => {
-    cy.get(`${ACTION_FILTER} [role="listbox"]`).click();
-    cy.contains(`${ACTION_FILTER} menu [role="option"]`, /^Created$/).click();
-    // A Dropdown with several values keeps its menu open, and a click on its overlay closes it.
-    cy.get(`${ACTION_FILTER} .moonstone-menu_overlay`).click();
-};
 
 const selectPageSize = (size: number) => {
     cy.get(`${ITEMS_PER_PAGE} [role="listbox"]`).click();
@@ -133,8 +124,8 @@ describe('Site history action bar', () => {
     it('loads the new rows with the same page, sort and filters when Refresh is clicked', () => {
         historyTotal(SITE_PATH, CREATED_IN_FOLDER).then(created => {
             expect(created, '"created" rows under sh-refresh').to.be.above(SMALL_PAGE_SIZE);
-            cy.get(PATH_FILTER).type(`${REFRESH_FOLDER_PATH}{enter}`);
-            selectCreatedAction();
+            typePath(REFRESH_FOLDER_PATH);
+            selectActions('Created');
             waitForRows();
             selectPageSize(SMALL_PAGE_SIZE);
             header('Date').click();
@@ -155,10 +146,8 @@ describe('Site history action bar', () => {
                 expectTotalItems(`${SMALL_PAGE_SIZE + 1}-${createdAfter} of ${createdAfter}`);
                 expectNewTextRowsLast(createdAfter - created);
             });
-            cy.get(PATH_FILTER).should('have.value', REFRESH_FOLDER_PATH);
-            cy.get(`${ACTION_FILTER} .moonstone-tag`).should($tags => {
-                expect(textsOf($tags), 'selected actions').to.deep.equal(['Created']);
-            });
+            expectChip('path', `Path: ${REFRESH_FOLDER_PATH}`);
+            expectChip('action', 'Action: Created');
             header('Date').should('have.attr', 'aria-sort', 'ascending');
             cy.get(`${ITEMS_PER_PAGE} [role="listbox"]`).should('have.attr', 'aria-label', String(SMALL_PAGE_SIZE));
             cy.get(REFRESH).should('not.be.disabled');
@@ -171,13 +160,13 @@ describe('Site history action bar', () => {
         waitForStableTotal(SITE_PATH).then(total => {
             historyTotal(SITE_PATH, {path: REFRESH_FOLDER_PATH}).then(folderTotal => {
                 expect(folderTotal, 'rows of sh-refresh').to.be.above(0).and.below(total);
-                cy.get(PATH_FILTER).type(`${REFRESH_FOLDER_PATH}{enter}`);
+                typePath(REFRESH_FOLDER_PATH);
                 cy.get(CLEAR_FILTERS).should('not.be.disabled');
                 expectTotalItems(`1-${Math.min(PAGE_SIZE, folderTotal)} of ${folderTotal}`);
 
                 cy.get(CLEAR_FILTERS).click();
                 expectTotalItems(`1-${PAGE_SIZE} of ${total}`);
-                cy.get(PATH_FILTER).should('have.value', '');
+                expectChip('path', 'Path');
                 cy.get(CLEAR_FILTERS).should('be.disabled');
             });
         });
