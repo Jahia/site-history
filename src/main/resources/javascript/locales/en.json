@@ -53,6 +53,7 @@
       "previousMonth": "Go to the previous month",
       "add": "Add filter",
       "chip": "{{name}}: {{value}}",
+      "chipName": "{{name}}:",
       "clearOne": "Clear the {{name}} filter",
       "close": "Close",
       "pathHint": "Type a path and press Enter, or pick one.",

@@ -49,8 +49,16 @@ export const FilterChip = ({ id, name, value, isOpen, onOpen, onClose, onClear, 
   const editButton = (
       <Button
       variant="outlined"
-      className={value ? styles.chipValue : styles.chipEmpty}
-      label={label}
+      className={value ? `${styles.chipValue} ${styles.chipFilled}` : styles.chipEmpty}
+      label={
+        value ? (
+            <>
+                <strong>{t("siteHistory.filters.chipName", { name, interpolation: { escapeValue: false } })}</strong> {value}
+            </>
+        ) : (
+          name
+        )
+      }
       iconEnd={<ChevronDown/>}
       title={value ? label : undefined}
       aria-haspopup="dialog"
@@ -67,6 +75,7 @@ export const FilterChip = ({ id, name, value, isOpen, onOpen, onClose, onClear, 
                   <ButtonGroup variant="outlined" color="accent">
                       {editButton}
                       <Button
+              className={`${styles.chipFilled} ${styles.chipClear}`}
               icon={<Close/>}
               aria-label={clearLabel}
               title={clearLabel}

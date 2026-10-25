@@ -53,6 +53,7 @@
       "previousMonth": "Zum vorherigen Monat",
       "add": "Filter hinzufügen",
       "chip": "{{name}}: {{value}}",
+      "chipName": "{{name}}:",
       "clearOne": "Filter {{name}} zurücksetzen",
       "close": "Schließen",
       "pathHint": "Geben Sie einen Pfad ein und drücken Sie die Eingabetaste, oder wählen Sie einen aus.",

@@ -28,6 +28,7 @@ export const AddFilter = ({ filters, onAdd }: AddFilterProps) => {
           <span ref={anchorRef} className={styles.chip}>
               <Button
           variant="ghost"
+          className={styles.addFilter}
           icon={<Add/>}
           label={t("siteHistory.filters.add")}
           isDisabled={filters.length === 0}
