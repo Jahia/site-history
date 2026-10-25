@@ -1,5 +1,9 @@
 # site-history Changelog
 
+## 0.3.0
+
+* Changed the filters of the Site history page into chips on a toolbar above the table. Date and Path always show, and Add filter adds User and Action.
+
 ## 0.2.0
 
 ### New Features
