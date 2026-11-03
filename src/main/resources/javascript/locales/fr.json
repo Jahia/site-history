@@ -51,6 +51,7 @@
       "today": "Aujourd'hui",
       "nextMonth": "Aller au mois suivant",
       "previousMonth": "Aller au mois précédent",
+      "bar": "Filtres de l’historique",
       "add": "Ajouter un filtre",
       "chip": "{{name}} : {{value}}",
       "chipName": "{{name}} :",

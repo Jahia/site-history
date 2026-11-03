@@ -1657,9 +1657,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jahia/moonstone@npm:2.21.0":
+"@jahia/moonstone@https://pkg.pr.new/@jahia/moonstone@2c2c864":
   version: 2.21.0
-  resolution: "@jahia/moonstone@npm:2.21.0"
+  resolution: "@jahia/moonstone@https://pkg.pr.new/@jahia/moonstone@2c2c864"
   dependencies:
     "@daypicker/react": "npm:^10.0.1"
     "@floating-ui/react": "npm:^0.27.20"
@@ -1672,7 +1672,7 @@ __metadata:
     react: ^18.3.1
     react-dom: ^18.3.1
     react-table: ^7.8.0
-  checksum: 10c0/298690d74d90dab8abedd30fcde1cc0726e0abb266731aa5305b9fd51d63c4661c7ec713998b25ee6cd43222705c401c2b6613829f7b59fd634145d435b00bcf
+  checksum: 10c0/111b6b08686b0f59df16667f2bd6bddabf0ff6dfe8bb2b9abd14db2a5ea07f698aa0e39f266b4cd14ca916c641bf277c7c42107f757bc5e09928f691859afc99
   languageName: node
   linkType: hard
 
@@ -6295,7 +6295,7 @@ __metadata:
   dependencies:
     "@apollo/client": "npm:^3.11.0"
     "@jahia/eslint-config": "npm:^2.2.0"
-    "@jahia/moonstone": "npm:2.21.0"
+    "@jahia/moonstone": "https://pkg.pr.new/@jahia/moonstone@2c2c864"
     "@jahia/ui-extender": "npm:^1.2.0"
     "@jahia/vite-federation-plugin": "npm:0.1.1"
     "@tanstack/react-table": "npm:8.21.3"

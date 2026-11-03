@@ -42,11 +42,11 @@ const DATE_TO = '[data-sel-role="filter-date-to"]';
 const USER_FILTER = '[data-sel-role="filter-user"]';
 const USER_PICKER_BUTTON = '[data-sel-role="filter-user-picker"]';
 const CLEAR_FILTERS = '[data-sel-role="filter-clear"]';
-const COLUMN_CHOICE = '[data-sel-role="column-choice"]';
+const COLUMN_CHOICE = 'button[aria-label="Choose the columns"]';
 const ROW_CONTROLS = [
-    `${CHIP}[data-sel-filter="date"]`,
-    `${CHIP}[data-sel-filter="path"]`,
-    '[data-sel-role="filter-add"]',
+    'span[data-filter="date"]',
+    'span[data-filter="path"]',
+    'button:contains("Add filter")',
     COLUMN_CHOICE
 ];
 const PICKER = '[data-sel-role="picker-dialog"][data-sel-type="user"]';
@@ -207,11 +207,11 @@ describe('Site history filters', () => {
         cy.get(ADD_FILTER).click();
         cy.get(ADD_FILTER_ITEMS).should($items => {
             expect(
-                Cypress.$.makeArray($items).map(item => item.dataset.selFilter),
+                Cypress.$.makeArray($items).map(item => item.dataset.filter),
                 'filters in Add filter'
             ).to.deep.equal(['user', 'action']);
         });
-        cy.get(`${ADD_FILTER_ITEMS}[data-sel-filter="user"]`).click();
+        cy.get(`${ADD_FILTER_ITEMS}[data-filter="user"]`).click();
         cy.get(editor('user')).should('be.visible');
         cy.focused().should('match', USER_FILTER);
         // An added filter with no value leaves the row when its editor closes.
@@ -225,7 +225,7 @@ describe('Site history filters', () => {
         cy.get(ADD_FILTER).should('be.disabled');
         cy.get(`${FILTERS} ${CHIP}`).should($chips => {
             expect(
-                Cypress.$.makeArray($chips).map(element => element.dataset.selFilter),
+                Cypress.$.makeArray($chips).map(element => element.dataset.filter),
                 'chips in the row'
             ).to.deep.equal(['date', 'path', 'user', 'action']);
         });
@@ -247,11 +247,11 @@ describe('Site history filters', () => {
     it('names the selected actions in the Action chip, on one line', () => {
         const label = 'Action: Added, Created, Published';
         selectActions('Published', 'Added', 'Created');
+        // The Tooltip of the bar shows the full text of a chip on hover and on focus
         expectChip('action', label);
-        cy.get(chipButton('action')).should('have.attr', 'title', label);
         cy.get(FILTERS).should($filters => {
-            const action = boxOf($filters.find(`${CHIP}[data-sel-filter="action"] button`)[0]);
-            const date = boxOf($filters.find(`${CHIP}[data-sel-filter="date"] button`)[0]);
+            const action = boxOf($filters.find('span[data-filter="action"] button')[0]);
+            const date = boxOf($filters.find('span[data-filter="date"] button')[0]);
             expect(action.height, 'height of the Action chip').to.be.closeTo(date.height, 0.5);
         });
     });

@@ -155,7 +155,7 @@ describe('Site history action bar', () => {
     });
 
     it('clears the filters with the button of the action bar', () => {
-        cy.get(`${FILTERS} [data-sel-role="filter-clear"]`).should('not.exist');
+        cy.get(`${FILTERS} button:contains("Clear all")`).should('not.exist');
         cy.get(CLEAR_FILTERS).should('be.visible').and('be.disabled');
         waitForStableTotal(SITE_PATH).then(total => {
             historyTotal(SITE_PATH, {path: REFRESH_FOLDER_PATH}).then(folderTotal => {

@@ -12,11 +12,12 @@ const TABLE = '[data-sel-role="site-history-table"]';
 const HEADERS = `${TABLE} thead th`;
 const ROWS = `${TABLE} tbody tr`;
 const FILTERS = '[data-sel-role="site-history-filters"]';
-const COLUMN_CHOICE = '[data-sel-role="column-choice"]';
-const MENU = '[data-sel-role="column-choice-menu"]';
-const ITEMS = `${MENU} [data-sel-role="column-choice-item"]`;
-const SEARCH = `${MENU} .moonstone-menu_searchInput input`;
-const CLOSE = `${MENU} [data-sel-role="column-choice-close"]`;
+// The column choice of the CollectionBar: a button and its Menu, which Escape closes
+const COLUMN_CHOICE = 'button[aria-label="Choose the columns"]';
+const MENU = 'menu[aria-label="Choose the columns"]';
+const ITEMS = `${MENU} [role="menuitemcheckbox"]`;
+const TITLES = `${MENU} li:not([role="menuitemcheckbox"])`;
+const SEARCH = `${MENU} input[role="searchbox"]`;
 const NO_COLUMN = '[data-sel-role="site-history-no-column"]';
 const LOAD_TIMEOUT = 30000;
 const NAME_WIDTH = 300;
@@ -58,8 +59,13 @@ const waitForHistoryQuery = (): Cypress.Chainable<{
     });
 
 const openMenu = () => {
-    cy.get(COLUMN_CHOICE).click();
+    cy.get(`${FILTERS} ${COLUMN_CHOICE}`).click();
     cy.get(MENU).should('be.visible');
+};
+
+const closeMenu = () => {
+    cy.focused().type('{esc}');
+    cy.get(MENU).should('not.exist');
 };
 
 const toggleColumn = (label: string) => cy.contains(ITEMS, new RegExp(`^${label}$`)).click();
@@ -84,8 +90,9 @@ describe('Site history column choice', () => {
     it('hides UUID and Message on a first visit and lists them under Hidden columns', () => {
         expectHeaders(DEFAULT_COLUMN_LABELS);
         openMenu();
-        cy.get(`${MENU} [data-sel-role="column-choice-visible"]`).should('have.text', 'Visible columns');
-        cy.get(`${MENU} [data-sel-role="column-choice-hidden"]`).should('have.text', 'Hidden columns');
+        cy.get(TITLES).should($titles => {
+            expect(textsOf($titles), 'section titles').to.deep.equal(['Visible columns', 'Hidden columns']);
+        });
         cy.get(ITEMS).should($items => {
             expect(textsOf($items), 'menu items').to.deep.equal([...DEFAULT_COLUMN_LABELS, ...HIDDEN_BY_DEFAULT]);
             const checked = Cypress.$.makeArray($items).map(item => item.getAttribute('aria-checked'));
@@ -94,8 +101,7 @@ describe('Site history column choice', () => {
                 ...HIDDEN_BY_DEFAULT.map(() => 'false')
             ]);
         });
-        cy.get(CLOSE).click();
-        cy.get(MENU).should('not.be.visible');
+        closeMenu();
     });
 
     it('keeps a hidden column hidden after a reload, and the page query skips its fields', () => {
@@ -142,7 +148,7 @@ describe('Site history column choice', () => {
             const checked = Cypress.$.makeArray($items).map(item => item.getAttribute('aria-checked'));
             expect(checked, 'checked items').to.deep.equal($items.toArray().map(() => 'false'));
         });
-        cy.get(CLOSE).click();
+        closeMenu();
         cy.get(`${FILTERS} ${COLUMN_CHOICE}`).should('be.visible');
     });
 

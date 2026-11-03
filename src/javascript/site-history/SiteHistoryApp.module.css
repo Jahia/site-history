@@ -94,13 +94,10 @@
   direction: rtl;
 }
 
+/* CollectionBar holds the layout of the row and its top and bottom padding, and the row stays the top band of the table. */
 .filters {
-  display: flex;
   flex: none;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--moon-spacing-small);
-  padding: var(--moon-spacing-small) calc(var(--moon-spacing-small) + var(--moon-spacing-nano));
+  padding-inline: calc(var(--moon-spacing-small) + var(--moon-spacing-nano));
   border-bottom: 1px solid var(--moon-color-gray_light);
   border-radius: var(--moon-radius) var(--moon-radius) 0 0;
   background-color: var(--moon-color-white);
@@ -112,82 +109,12 @@
   border-top-right-radius: 0;
 }
 
-/* A flex box drops the line box of an inline span, so the button sits in the middle of the filter row. */
-.chip,
-.columnChoice {
-  display: flex;
-}
-
-.columnChoice {
-  margin-left: auto;
-}
-
-/* moonstone has no dashed or tinted Button. The doubled class and the attributes outrank the colors of the outlined Button in each state. */
-.chipEmpty.chipEmpty[data-variant] {
-  border: 1px dashed var(--moon-color-gray_plain60);
-  background-color: var(--moon-color-gray_light_plain20);
-  color: var(--moon-color-gray_dark);
-}
-
-.chipEmpty.chipEmpty[data-variant]:hover:not(:disabled) {
-  border-color: var(--moon-color-gray);
-  background-color: var(--moon-color-gray_light_plain40);
-  color: var(--moon-color-gray_dark);
-}
-
-.chipEmpty.chipEmpty[data-variant]:active:not(:disabled) {
-  border-color: var(--moon-color-gray);
-  background-color: var(--moon-color-gray_light_plain60);
-  color: var(--moon-color-gray_dark);
-}
-
-.chipFilled.chipFilled[data-variant][data-color] {
-  border-color: var(--moon-color-accent_plain20);
-  background-color: var(--moon-color-accent_plain20);
-  color: var(--moon-color-accent_dark_contrast);
-}
-
-.chipFilled.chipFilled[data-variant][data-color]:hover:not(:disabled) {
-  border-color: var(--moon-color-accent_plain40);
-  background-color: var(--moon-color-accent_plain40);
-  color: var(--moon-color-accent_dark_contrast);
-}
-
-.chipFilled.chipFilled[data-variant][data-color]:active:not(:disabled) {
-  border-color: var(--moon-color-accent_plain60);
-  background-color: var(--moon-color-accent_plain60);
-  color: var(--moon-color-accent_dark_contrast);
-}
-
-.chipClear.chipClear[data-variant][data-color] {
-  border-left-color: var(--moon-color-accent_plain40);
-}
-
-.addFilter.addFilter[data-variant]:not(:disabled) {
-  color: var(--moon-color-accent_dark);
-}
-
-/* A long value ends with an ellipsis, and the title of the button holds the full label. */
-.chipValue {
-  max-width: 400px;
-}
-
-.chipValue > span {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.chipValue > svg {
-  flex: none;
-}
-
+/* The body of the CollectionBar selector holds the padding. */
 .editorBody {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: var(--moon-spacing-small);
-  padding: var(--moon-spacing-small) var(--moon-spacing-medium);
 }
 
 .typedEditor {
@@ -196,11 +123,4 @@
 
 .dateRange {
   flex-direction: row;
-}
-
-.menuFooter {
-  display: flex;
-  justify-content: flex-end;
-  padding: var(--moon-spacing-small);
-  border-top: 1px solid var(--moon-color-gray_light);
 }
