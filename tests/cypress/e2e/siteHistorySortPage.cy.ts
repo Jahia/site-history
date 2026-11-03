@@ -17,10 +17,10 @@ const ROWS = `${TABLE} tbody tr`;
 const TOTAL_ITEMS = `${TABLE} [data-testid="pagination-total-items"]`;
 const NEXT_PAGE = `${TABLE} [data-testid="pagination-button-next-page"]`;
 const PATH_CELLS = `${ROWS} td:nth-child(${COLUMN_LABELS.indexOf('Path') + 1})`;
-const COLUMN_CHOICE = '[data-sel-role="column-choice"]';
-const MENU = '[data-sel-role="column-choice-menu"]';
-const ITEMS = `${MENU} [data-sel-role="column-choice-item"]`;
-const CLOSE = `${MENU} [data-sel-role="column-choice-close"]`;
+// The column choice of the CollectionBar: a button and its Menu, which Escape closes
+const COLUMN_CHOICE = '[data-sel-role="site-history-filters"] button[aria-label="Choose the columns"]';
+const MENU = 'menu[aria-label="Choose the columns"]';
+const ITEMS = `${MENU} [role="menuitemcheckbox"]`;
 const LOAD_TIMEOUT = 30000;
 
 const SORTABLE_COLUMNS: {label: string; field: HistorySortField}[] = [
@@ -115,7 +115,8 @@ describe('Site history sort', () => {
         expectSortedBy('Message', 'ascending');
         cy.get(COLUMN_CHOICE).click();
         cy.contains(ITEMS, /^Message$/).click();
-        cy.get(CLOSE).click();
+        cy.focused().type('{esc}');
+        cy.get(MENU).should('not.exist');
         expectSortedBy('Date', 'descending');
         expectFirstPageOf({field: 'DATE', direction: 'DESC'});
     });

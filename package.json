@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@jahia/eslint-config": "^2.2.0",
-    "@jahia/moonstone": "2.21.0",
+    "@jahia/moonstone": "https://pkg.pr.new/@jahia/moonstone@2c2c864",
     "@jahia/vite-federation-plugin": "0.1.1",
     "@tanstack/react-table": "8.21.3",
     "@types/react": "^18.3.28",

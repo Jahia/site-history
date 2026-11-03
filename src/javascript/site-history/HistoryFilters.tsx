@@ -1,34 +1,35 @@
 import {
   AddPerson,
   Button,
-  CheckboxChecked,
-  CheckboxUnchecked,
+  CheckboxGroup,
+  CheckboxItem,
+  CollectionBar,
   DateTimeInput,
+  Filter,
   FolderOpen,
   Input,
-  MenuItem,
+  Person,
   Typography,
+  type CollectionBarFilter,
   type Temporal,
 } from "@jahia/moonstone";
 import type { ColumnFiltersState, VisibilityState } from "@tanstack/react-table";
 import { useEffect, useState, type ReactElement } from "react";
 import { useTranslation } from "react-i18next";
 import { NAMESPACE } from "../i18n.ts";
-import { AddFilter } from "./AddFilter.tsx";
-import { ColumnChoice } from "./ColumnChoice.tsx";
+import { isColumnVisible } from "./columnVisibility.ts";
 import { ACTION_CONFIG } from "./columns.tsx";
-import { FilterChip, type ChipState, type FilterId } from "./FilterChip.tsx";
 import { filterValue, parseUserKeys, type DateRange } from "./filters.ts";
 import { formatDay } from "./formatDate.ts";
 import styles from "./SiteHistoryApp.module.css";
 
 type SetFilter = (id: string, value: unknown) => void;
 
-/** The filters that Add filter puts in the row. Date and Path are always in the row. */
-const ADDABLE_FILTERS: ReadonlyArray<FilterId> = ["user", "action"];
-
 // The moonstone typings drop the null that DateTimeInput emits when the user clears the field.
 const toDay = (value: Temporal.PlainDate | null): string => value?.toString() ?? "";
+
+// CollectionBar puts the name of the filter where its labels hold {{name}}, so i18next keeps that placeholder.
+const KEEP_NAME = { name: "{{name}}", interpolation: { escapeValue: false } };
 
 type PickerButtonProps = Readonly<{ icon: ReactElement; label: string; role: string; onClick: () => void }>;
 
@@ -49,15 +50,9 @@ const TypedEditor = ({ hint, picker, children }: TypedEditorProps) => (
     </div>
 );
 
-type PathFilterProps = ChipState & Readonly<{
-  filters: ColumnFiltersState;
-  siteKey: string;
-  sitePath: string;
-  language: string;
-  onChange: SetFilter;
-}>;
+type FilterArgs = Readonly<{ filters: ColumnFiltersState; onChange: SetFilter }>;
 
-const PathFilter = ({ filters, siteKey, sitePath, language, onChange, onClose, ...chip }: PathFilterProps) => {
+const usePathFilter = ({ filters, siteKey, sitePath, language, onChange }: FilterArgs & Readonly<{ siteKey: string; sitePath: string; language: string }>): CollectionBarFilter => {
   const { t } = useTranslation(NAMESPACE);
   const openPicker = globalThis.CE_API?.openPicker;
   const path = filterValue<string>(filters, "path") ?? "";
@@ -70,11 +65,11 @@ const PathFilter = ({ filters, siteKey, sitePath, language, onChange, onClose, .
     }
   };
 
-  // The picker dialog opens below the editor Menu, so the editor closes first.
+  // The picker dialog opens below the selector, so the selector closes first, which commits the typed path.
   // A filter change returns the table to page 1, so the picked path that is already the filter changes nothing.
-  const pick = (closeEditor: () => void) => {
+  const pick = (close: () => void) => {
     const current = draft.trim();
-    closeEditor();
+    close();
     openPicker?.({
       type: "editorial",
       site: siteKey,
@@ -83,67 +78,54 @@ const PathFilter = ({ filters, siteKey, sitePath, language, onChange, onClose, .
     });
   };
 
-  return (
-      <FilterChip
-      {...chip}
-      id="path"
-      name={t("siteHistory.columns.path")}
-      value={path}
-      onClose={() => {
-        commit(draft);
-        onClose();
-      }}
-      onClear={() => onChange("path", "")}
-      >
-          {closeEditor => (
-              <TypedEditor
-          hint={t("siteHistory.filters.pathHint")}
-          picker={
-            openPicker && (
-            <PickerButton
-              icon={<FolderOpen/>}
-              label={t("siteHistory.filters.pickPath")}
-              role="filter-path-picker"
-              onClick={() => pick(closeEditor)}
-            />
-            )
-          }
-              >
-                  <Input
-            value={draft}
-            placeholder={t("siteHistory.filters.path", { example: `${sitePath}/home`, interpolation: { escapeValue: false } })}
-            aria-label={t("siteHistory.columns.path")}
-            data-sel-role="filter-path"
-            onChange={event => setDraft(event.target.value)}
-            onKeyUp={event => {
-              if (event.key === "Enter") {
-                commit(draft);
-              }
-            }}
-            onBlur={() => commit(draft)}
-            onClear={() => {
-              setDraft("");
-              commit("");
-            }}
-          />
-              </TypedEditor>
-      )}
-      </FilterChip>
-  );
+  return {
+    key: "path",
+    label: t("siteHistory.columns.path"),
+    valueLabel: path,
+    isDisplayedByDefault: true,
+    onClear: () => onChange("path", ""),
+    onClose: () => commit(draft),
+    selector: ({ close }) => (
+        <TypedEditor
+        hint={t("siteHistory.filters.pathHint")}
+        picker={
+          openPicker && (
+          <PickerButton icon={<FolderOpen/>} label={t("siteHistory.filters.pickPath")} role="filter-path-picker" onClick={() => pick(close)}/>
+          )
+        }
+        >
+            <Input
+          value={draft}
+          placeholder={t("siteHistory.filters.path", { example: `${sitePath}/home`, interpolation: { escapeValue: false } })}
+          aria-label={t("siteHistory.columns.path")}
+          data-sel-role="filter-path"
+          onChange={event => setDraft(event.target.value)}
+          onKeyUp={event => {
+            if (event.key === "Enter") {
+              commit(draft);
+            }
+          }}
+          onBlur={() => commit(draft)}
+          onClear={() => {
+            setDraft("");
+            commit("");
+          }}
+        />
+        </TypedEditor>
+    ),
+  };
 };
 
 export type PickedUser = Readonly<{ name: string; uuid: string; path: string }>;
 
-type UserFilterProps = ChipState & Readonly<{
-  filters: ColumnFiltersState;
-  pickedUsers: PickedUser[];
-  siteKey: string;
-  language: string;
-  onChange: SetFilter;
-  onPick: (users: PickedUser[]) => void;
-}>;
-
-const UserFilter = ({ filters, pickedUsers, siteKey, language, onChange, onPick, onClose, ...chip }: UserFilterProps) => {
+const useUserFilter = ({
+  filters,
+  pickedUsers,
+  siteKey,
+  language,
+  onChange,
+  onPick,
+}: FilterArgs & Readonly<{ pickedUsers: PickedUser[]; siteKey: string; language: string; onPick: (users: PickedUser[]) => void }>): CollectionBarFilter => {
   const { t } = useTranslation(NAMESPACE);
   const openPicker = globalThis.CE_API?.openPicker;
   const userKeys = filterValue<string[]>(filters, "user") ?? [];
@@ -159,10 +141,10 @@ const UserFilter = ({ filters, pickedUsers, siteKey, language, onChange, onPick,
     }
   };
 
-  // The picker dialog opens below the editor Menu, so the editor closes first and commits the typed keys.
-  const pick = (closeEditor: () => void) => {
+  // The picker dialog opens below the selector, so the selector closes first and commits the typed keys.
+  const pick = (close: () => void) => {
     const keys = parseUserKeys(draft);
-    closeEditor();
+    close();
     // A typed key has no node, so the picker preselects only the users that it returned before.
     const preselected = pickedUsers.filter(user => keys.includes(user.name));
     openPicker?.({
@@ -184,95 +166,77 @@ const UserFilter = ({ filters, pickedUsers, siteKey, language, onChange, onPick,
     });
   };
 
-  return (
-      <FilterChip
-      {...chip}
-      id="user"
-      name={t("siteHistory.columns.user")}
-      value={text}
-      onClose={() => {
-        commit(parseUserKeys(draft));
-        onClose();
-      }}
-      onClear={() => onChange("user", [])}
-      >
-          {closeEditor => (
-              <TypedEditor
-          hint={t("siteHistory.filters.userHint")}
-          picker={
-            openPicker && (
-            <PickerButton
-              icon={<AddPerson/>}
-              label={t("siteHistory.filters.pickUsers")}
-              role="filter-user-picker"
-              onClick={() => pick(closeEditor)}
-            />
-            )
-          }
-              >
-                  <Input
-            value={draft}
-            placeholder={t("siteHistory.filters.user")}
-            aria-label={t("siteHistory.columns.user")}
-            data-sel-role="filter-user"
-            onChange={event => setDraft(event.target.value)}
-            onKeyUp={event => {
-              if (event.key === "Enter") {
-                commit(parseUserKeys(draft));
-              }
-            }}
-            onBlur={() => commit(parseUserKeys(draft))}
-            onClear={() => commit([])}
-          />
-              </TypedEditor>
-      )}
-      </FilterChip>
-  );
+  return {
+    key: "user",
+    label: t("siteHistory.columns.user"),
+    valueLabel: text,
+    iconStart: <Person/>,
+    onClear: () => onChange("user", []),
+    onClose: () => commit(parseUserKeys(draft)),
+    selector: ({ close }) => (
+        <TypedEditor
+        hint={t("siteHistory.filters.userHint")}
+        picker={
+          openPicker && (
+          <PickerButton icon={<AddPerson/>} label={t("siteHistory.filters.pickUsers")} role="filter-user-picker" onClick={() => pick(close)}/>
+          )
+        }
+        >
+            <Input
+          value={draft}
+          placeholder={t("siteHistory.filters.user")}
+          aria-label={t("siteHistory.columns.user")}
+          data-sel-role="filter-user"
+          onChange={event => setDraft(event.target.value)}
+          onKeyUp={event => {
+            if (event.key === "Enter") {
+              commit(parseUserKeys(draft));
+            }
+          }}
+          onBlur={() => commit(parseUserKeys(draft))}
+          onClear={() => commit([])}
+        />
+        </TypedEditor>
+    ),
+  };
 };
 
-type ActionFilterProps = ChipState & Readonly<{ filters: ColumnFiltersState; onChange: SetFilter }>;
-
-const ActionFilter = ({ filters, onChange, ...chip }: ActionFilterProps) => {
+const useActionFilter = ({ filters, onChange }: FilterArgs): CollectionBarFilter => {
   const { t } = useTranslation(NAMESPACE);
   const actions = filterValue<string[]>(filters, "action") ?? [];
-  const value = Object.keys(ACTION_CONFIG)
+  const valueLabel = Object.keys(ACTION_CONFIG)
     .filter(action => actions.includes(action))
     .map(action => t(`siteHistory.actions.${action}`))
     .join(", ");
 
-  const toggle = (action: string) =>
-    onChange("action", actions.includes(action) ? actions.filter(a => a !== action) : [...actions, action]);
+  const toggle = (action: string, isChecked: boolean) =>
+    onChange("action", isChecked ? [...actions, action] : actions.filter(a => a !== action));
 
-  return (
-      <FilterChip {...chip} id="action" name={t("siteHistory.columns.action")} value={value} onClear={() => onChange("action", [])}>
-          {Object.keys(ACTION_CONFIG).map(action => {
-        const isChecked = actions.includes(action);
-        return (
-            <MenuItem
+  return {
+    key: "action",
+    label: t("siteHistory.columns.action"),
+    valueLabel,
+    iconStart: <Filter/>,
+    onClear: () => onChange("action", []),
+    selector: (
+        <CheckboxGroup name="site-history-action" aria-label={t("siteHistory.columns.action")}>
+            {Object.keys(ACTION_CONFIG).map(action => (
+                <CheckboxItem
             key={action}
-            role="menuitemcheckbox"
-            aria-checked={isChecked}
-            tabIndex={0}
+            value={action}
             label={t(`siteHistory.actions.${action}`)}
-            iconStart={isChecked ? <CheckboxChecked color="blue"/> : <CheckboxUnchecked/>}
+            checked={actions.includes(action)}
             data-sel-role="filter-action"
             data-sel-action={action}
-            onClick={() => toggle(action)}
-            onKeyUp={event => {
-              if (event.key === "Enter" || event.key === " ") {
-                toggle(action);
-              }
-            }}
+            onChange={(_event, _value, isChecked) => toggle(action, isChecked)}
           />
-        );
-      })}
-      </FilterChip>
-  );
+        ))}
+        </CheckboxGroup>
+    ),
+  };
 };
 
-type DateFilterProps = ChipState & Readonly<{ filters: ColumnFiltersState; locale: string; onChange: SetFilter }>;
-
-const DateFilter = ({ filters, locale, onChange, ...chip }: DateFilterProps) => {
+const useDateFilter = ({ filters, locale, onChange }: FilterArgs & Readonly<{ locale: string }>): CollectionBarFilter => {
   const { t } = useTranslation(NAMESPACE);
   const [from, to] = filterValue<DateRange>(filters, "date") ?? ["", ""];
   const calendarLabels = {
@@ -281,19 +245,24 @@ const DateFilter = ({ filters, locale, onChange, ...chip }: DateFilterProps) => 
     previousMonth: t("siteHistory.filters.previousMonth"),
   };
   const days = { from: from && formatDay(from, locale), to: to && formatDay(to, locale) };
-  let value = "";
+  let valueLabel = "";
   if (from && to) {
-    value = t("siteHistory.filters.dateBetween", days);
+    valueLabel = t("siteHistory.filters.dateBetween", days);
   } else if (from) {
-    value = t("siteHistory.filters.dateSince", days);
+    valueLabel = t("siteHistory.filters.dateSince", days);
   } else if (to) {
-    value = t("siteHistory.filters.dateUntil", days);
+    valueLabel = t("siteHistory.filters.dateUntil", days);
   }
 
-  return (
-      <FilterChip {...chip} id="date" name={t("siteHistory.columns.date")} value={value} onClear={() => onChange("date", ["", ""])}>
-          <div className={`${styles.editorBody} ${styles.dateRange}`}>
-              <DateTimeInput
+  return {
+    key: "date",
+    label: t("siteHistory.columns.date"),
+    valueLabel,
+    isDisplayedByDefault: true,
+    onClear: () => onChange("date", ["", ""]),
+    selector: (
+        <div className={`${styles.editorBody} ${styles.dateRange}`}>
+            <DateTimeInput
           type="date"
           variant="outlined"
           locale={locale}
@@ -305,7 +274,7 @@ const DateFilter = ({ filters, locale, onChange, ...chip }: DateFilterProps) => 
           data-sel-role="filter-date-from"
           onChange={(_event, day) => onChange("date", [toDay(day), to])}
         />
-              <DateTimeInput
+            <DateTimeInput
           type="date"
           variant="outlined"
           locale={locale}
@@ -317,9 +286,9 @@ const DateFilter = ({ filters, locale, onChange, ...chip }: DateFilterProps) => 
           data-sel-role="filter-date-to"
           onChange={(_event, day) => onChange("date", [from, toDay(day)])}
         />
-          </div>
-      </FilterChip>
-  );
+        </div>
+    ),
+  };
 };
 
 type HistoryFiltersProps = Readonly<{
@@ -349,55 +318,34 @@ export const HistoryFilters = ({
   onPickUsers,
   onColumnVisibilityChange,
 }: HistoryFiltersProps) => {
-  const [openFilter, setOpenFilter] = useState<FilterId | null>(null);
-  // The User and Action chips keep the order in which the user added them.
-  const [addOrder, setAddOrder] = useState<FilterId[]>([]);
-
-  const chip = (id: FilterId): ChipState => ({
-    isOpen: openFilter === id,
-    onOpen: () => setOpenFilter(id),
-    onClose: () => setOpenFilter(null),
-  });
-
-  // An added filter stays in the row while it holds a value or while its editor is open.
-  const added = [...addOrder, ...ADDABLE_FILTERS.filter(id => !addOrder.includes(id))].filter(
-    id => openFilter === id || filters.some(filter => filter.id === id),
-  );
-
-  const add = (id: FilterId) => {
-    setAddOrder(order => [...order.filter(other => other !== id), id]);
-    setOpenFilter(id);
-  };
+  const { t } = useTranslation(NAMESPACE);
+  const barFilters = [
+    useDateFilter({ filters, locale, onChange }),
+    usePathFilter({ filters, siteKey, sitePath, language, onChange }),
+    useUserFilter({ filters, pickedUsers, siteKey, language, onChange, onPick: onPickUsers }),
+    useActionFilter({ filters, onChange }),
+  ];
 
   return (
-      <div className={styles.filters} data-sel-role="site-history-filters">
-          <DateFilter {...chip("date")} filters={filters} locale={locale} onChange={onChange}/>
-          <PathFilter
-        {...chip("path")}
-        filters={filters}
-        siteKey={siteKey}
-        sitePath={sitePath}
-        language={language}
-        onChange={onChange}
-      />
-          {added.map(id =>
-        id === "user" ? (
-            <UserFilter
-            key={id}
-            {...chip(id)}
-            filters={filters}
-            pickedUsers={pickedUsers}
-            siteKey={siteKey}
-            language={language}
-            onChange={onChange}
-            onPick={onPickUsers}
-          />
-        ) : (
-            <ActionFilter key={id} {...chip(id)} filters={filters} onChange={onChange}/>
-        ),
-      )}
-          <AddFilter filters={ADDABLE_FILTERS.filter(id => !added.includes(id))} onAdd={add}/>
-          <ColumnChoice columns={columns} visibility={columnVisibility} onChange={onColumnVisibilityChange}/>
-      </div>
+      <CollectionBar
+      className={styles.filters}
+      data-sel-role="site-history-filters"
+      filters={barFilters}
+      columns={columns}
+      visibleColumns={columns.filter(column => isColumnVisible(columnVisibility, column.key)).map(column => column.key)}
+      i18n={{
+        toolbarLabel: t("siteHistory.filters.bar"),
+        addFilter: t("siteHistory.filters.add"),
+        filterName: t("siteHistory.filters.chipName", KEEP_NAME),
+        clearFilter: t("siteHistory.filters.clearOne", KEEP_NAME),
+        closeButton: t("siteHistory.filters.close"),
+        columnButton: t("siteHistory.columnChoice.button"),
+        visibleColumns: t("siteHistory.columnChoice.visible"),
+        hiddenColumns: t("siteHistory.columnChoice.hidden"),
+        searchEmptyText: t("siteHistory.columnChoice.noMatch"),
+      }}
+      onVisibleColumnsChange={visible =>
+        onColumnVisibilityChange(Object.fromEntries(columns.map(column => [column.key, visible.includes(column.key)])))}
+    />
   );
 };
