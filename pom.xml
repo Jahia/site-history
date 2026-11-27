@@ -29,7 +29,7 @@
     </scm>
 
     <properties>
-        <jahia-depends>default,graphql-dxm-provider,jcontent</jahia-depends>
+        <jahia-depends>default,graphql-dxm-provider,jcontent,app-shell=4.0</jahia-depends>
         <graphql-dxm-provider.version>3.4.0</graphql-dxm-provider.version>
         <graphql-java-annotations.version>21.1</graphql-java-annotations.version>
         <junit.jupiter.version>5.10.2</junit.jupiter.version>
