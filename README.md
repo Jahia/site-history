@@ -166,7 +166,6 @@ These variables list the rows of the user names in alphabetical order:
 - The User filter and the Path filter call `window.CE_API.openPicker`, which jContent sets and the Jahia Academy does not document. The two fields hide their picker icon when jContent does not set this function.
 - The Locate link reads entries of the jContent registry that the Jahia Academy does not document: the `accordionItem` entries, `jcontent/utils` and the redux action `jcontentGoto`. It selects the node with the redux actions `CM_SET_PREVIEW_SELECTION` before jContent 3.7.0 and `CM_SET_SIDE_PANEL_SELECTION` from 3.7.0.
 - A new tab that the Locate link opens shows the folder or the page of the node. A jContent URL holds no selection, so the tab does not select the node.
-- The module bundles moonstone 2.21.0 with the scoped stylesheet of moonstone. The build adds the prefix `sitehis` to each hashed class name, such as `sitehis_moonstone-TableRow_cb6f0ca`. The rules of the bundle then match the elements of this module only. The moonstone tokens on `:root` apply while Site history is open, and the build drops any moonstone selector without a prefixed class.
 - The page of the module asks for `totalCount` and `entries` in one request. On a site with few rows, or with a filter that matches no row, this request took up to 7.3 seconds.
 
 The table gives the worst time of one GraphQL request with 2,000,000 rows on MariaDB and Jahia 8.2.4. The rows have 5 actions, 10 folders and 200 users, and the date filter covers 24 hours.

@@ -1475,9 +1475,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jahia/moonstone@npm:2.21.0":
-  version: 2.21.0
-  resolution: "@jahia/moonstone@npm:2.21.0"
+"@jahia/moonstone@npm:^2.21.1":
+  version: 2.21.1
+  resolution: "@jahia/moonstone@npm:2.21.1"
   dependencies:
     "@daypicker/react": "npm:^10.0.1"
     "@floating-ui/react": "npm:^0.27.20"
@@ -1490,7 +1490,7 @@ __metadata:
     react: ^18.3.1
     react-dom: ^18.3.1
     react-table: ^7.8.0
-  checksum: 10c0/298690d74d90dab8abedd30fcde1cc0726e0abb266731aa5305b9fd51d63c4661c7ec713998b25ee6cd43222705c401c2b6613829f7b59fd634145d435b00bcf
+  checksum: 10c0/8280f06540fda6bff6846f58c529eb31880d4401d7ce5a56f455b2bc38cad9f5eeaf812e5369b60aa1032a97f2916750096027e4e5a5dfde3452cf0cb903fef9
   languageName: node
   linkType: hard
 
@@ -4535,7 +4535,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanoid@npm:^3.3.11, nanoid@npm:^3.3.20":
+"nanoid@npm:^3.3.20":
   version: 3.3.20
   resolution: "nanoid@npm:3.3.20"
   bin:
@@ -4854,17 +4854,6 @@ __metadata:
   version: 1.1.0
   resolution: "possible-typed-array-names@npm:1.1.0"
   checksum: 10c0/c810983414142071da1d644662ce4caebce890203eb2bc7bf119f37f3fe5796226e117e6cca146b521921fa6531072674174a3325066ac66fce089a53e1e5196
-  languageName: node
-  linkType: hard
-
-"postcss@npm:8.5.8":
-  version: 8.5.8
-  resolution: "postcss@npm:8.5.8"
-  dependencies:
-    nanoid: "npm:^3.3.11"
-    picocolors: "npm:^1.1.1"
-    source-map-js: "npm:^1.2.1"
-  checksum: 10c0/dd918f7127ee7c60a0295bae2e72b3787892296e1d1c3c564d7a2a00c68d8df83cadc3178491259daa19ccc54804fb71ed8c937c6787e08d8bd4bedf8d17044c
   languageName: node
   linkType: hard
 
@@ -5428,7 +5417,7 @@ __metadata:
   dependencies:
     "@apollo/client": "npm:^3.11.0"
     "@jahia/eslint-config": "npm:^2.2.0"
-    "@jahia/moonstone": "npm:2.21.0"
+    "@jahia/moonstone": "npm:^2.21.1"
     "@jahia/ui-extender": "npm:2.0.0"
     "@jahia/vite-federation-plugin": "npm:^0.2.1"
     "@tanstack/react-table": "npm:8.21.3"
@@ -5441,7 +5430,6 @@ __metadata:
     eslint-plugin-json: "npm:^4.0.1"
     graphql: "npm:^16.13.1"
     i18next: "npm:23.16.8"
-    postcss: "npm:8.5.8"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
     react-i18next: "npm:15.7.4"
@@ -5491,7 +5479,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"source-map-js@npm:^1.2.1, source-map-js@npm:^1.2.2":
+"source-map-js@npm:^1.2.2":
   version: 1.2.4
   resolution: "source-map-js@npm:1.2.4"
   checksum: 10c0/b0fb346b142e89a19fa3299a259d8c0dc66626321634c30df260b2e8a1d4c1e219a6a28e8d10617cc54e7816d94eff5c4edd96e208172e93efc2c6fd75b111c6
