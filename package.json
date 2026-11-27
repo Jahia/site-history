@@ -11,7 +11,6 @@
     "lint": "eslint --ext js,jsx,ts,tsx,json,cjs,mjs .",
     "lint:fix": "yarn lint --fix"
   },
-  "_comment-dependencies": "peerDependencies are the singletons of app-shell 4, and devDependencies holds a copy of each at the version app-shell 4.0.0 provides. dependencies are bundled and shared pooled. Moonstone stays in devDependencies: the module bundles its own copy with a scoped stylesheet.",
   "peerDependencies": {
     "@jahia/ui-extender": "^2.0.0",
     "i18next": ">=23.16.8 <27",
